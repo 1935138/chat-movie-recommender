@@ -21,7 +21,8 @@ def init_db(db_path="movie_recommendation.db"):
         -- 유저 정보
         CREATE TABLE IF NOT EXISTS users (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
-            user_name TEXT UNIQUE NOT NULL
+            user_name TEXT UNIQUE NOT NULL,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         );
 
         -- 유저 입력 히스토리 (예: "무서운 영화 추천해줘")
@@ -41,6 +42,7 @@ def init_db(db_path="movie_recommendation.db"):
             is_selected BOOLEAN DEFAULT 0,
             is_disliked BOOLEAN DEFAULT 0,
             feedback_text TEXT,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             FOREIGN KEY (interaction_id) REFERENCES user_interactions(id)
         );
 
@@ -59,6 +61,7 @@ def init_db(db_path="movie_recommendation.db"):
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             interaction_id INTEGER NOT NULL,
             movie_title TEXT NOT NULL,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             FOREIGN KEY (interaction_id) REFERENCES user_interactions(id)
         );
         """)
