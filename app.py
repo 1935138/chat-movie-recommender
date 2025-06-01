@@ -1,3 +1,5 @@
+import uuid
+
 import streamlit as st
 from langchain.schema import Document
 from langchain_community.vectorstores import FAISS
@@ -90,8 +92,7 @@ def set_branch(branch_key: str):
     """
     print("========set_branch", branch_key)
     st.session_state.branch = branch_key
-    render_branch_status(sidebar_placeholder.container())
-
+    update_sidebar()
 
 # -----------------------------------------------------------------------------
 # 썸네일 관련 헬퍼 --------------------------------------------------------------
@@ -395,7 +396,6 @@ def update_sidebar():
 
         # 분리된 함수들을 호출하여 사이드바 콘텐츠를 구성합니다.
         render_branch_status(container)
-        render_previous_recommendations(container)
 
 update_sidebar()
 
@@ -439,7 +439,12 @@ if st.session_state.first_turn and (st.session_state.chat_history is None or st.
 
 
 # 사용자 입력 처리
-user_query = st.chat_input("오늘 하루 너무 힘들었어. 스트레스가 싹 풀릴 만큼 통쾌한 액션 영화 추천 해줘")
+if st.session_state.last_recommend_df is not None:
+    prompt = "더 물어보고 싶은게 있을까요? 없으면 '고마워 사만다'라고 말해주세요"
+else :
+    prompt = "오늘 하루 너무 힘들었어. 스트레스가 싹 풀릴 만큼 통쾌한 액션 영화 추천 해줘"
+user_query = st.chat_input(prompt)
+
 if not user_query:
     st.stop()
 else: 
@@ -548,6 +553,7 @@ if (
             user_meta,
         )
     else:
+        set_branch("follow_up")
         merged_query = user_query
         user_meta = extract_user_meta(merged_query)
         st.session_state.last_recommend_query = merged_query
@@ -574,7 +580,7 @@ if (
     st.session_state.first_turn = False
 
     render_recommendation_thumbnails(df_ret, key_prefix="retry_recommend_")
-    add_to_chat_history("assistant", df_ret, "similar_recommend_", "dataframe")
+    add_to_chat_history("assistant", df_ret, "retry_recommend_", "dataframe")
 
     st.stop()
 
