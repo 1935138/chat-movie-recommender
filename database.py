@@ -125,12 +125,13 @@ def get_previous_recommendations(user_id: int, db_path: str = "movie_recommendat
         conn = sqlite3.connect(db_path)
         cursor = conn.cursor()
         cursor.execute("""
-            SELECT rl.movie_title
-            FROM recommendation_logs rl
-            JOIN user_interactions ui ON rl.interaction_id = ui.id
-            WHERE ui.user_id = ?
+            select rl.movie_title, ui.created_at
+            from recommendation_logs rl
+            inner join user_interactions ui
+                on rl.interaction_id = ui.id
+            where ui.user_id = ?
         """, (user_id,))
-        titles = [row[0] for row in cursor.fetchall()]
+        titles = cursor.fetchall()
         conn.close()
     return titles
 
