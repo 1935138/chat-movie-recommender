@@ -25,7 +25,7 @@ def is_follow_up_question(user_input: str, previous_titles: List[str]) -> bool:
 
 # ✅ 재추천 판단 함수
 def is_retry_request(user_input: str) -> Tuple[bool, str]:
-    exclude_keywords = ["제외", "빼고", "빼줘", "빼서", "뺀", "제외하고", "빼고 추천"]
+    exclude_keywords = ["제외", "빼고", "빼줘", "빼서", "뺀", "제외하고", "빼고 추천", "재추천"]
     if any(kw in user_input for kw in exclude_keywords):
         return True, "제외"
     if "다시 추천" in user_input or "다른 영화" in user_input:
